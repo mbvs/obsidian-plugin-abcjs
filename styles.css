@@ -1,8 +1,8 @@
 /* Default abcjs styles look good. Just adapting it to the current theme.  */
-/* 
+
 .abcjs-container svg path {
   fill: var(--text-normal);
-} */
+}
 
 .abcjs-container svg text {
   fill: var(--text-normal);
@@ -13,8 +13,8 @@
 }
 
 .obsidian-plugin-abcjs-error {
-  background-color: #e74c3c;
-  color: white;
+  background-color: var(--background-modifier-error);
+  color: var(--text-normal);
   position: absolute;
   top: 0;
   left: 0;
@@ -210,7 +210,7 @@
 }
 
 .abcjs-css-warning {
-  /* display: none; */
+  display: none;
 }
 
 .abcjs-container .abcjs-highlight path {

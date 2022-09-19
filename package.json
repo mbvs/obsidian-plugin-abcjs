@@ -21,6 +21,6 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
-    "abcjs": "^6.0.3"
+    "abcjs": "^6.1.3"
   }
 }

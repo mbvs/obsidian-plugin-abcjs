@@ -9,6 +9,9 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "importHelpers": true,
+    "paths": {
+      "abcjs": ["./typeDefs/abcjs.override.d.ts"]
+    },
     "lib": [
       "dom",
       "es5",

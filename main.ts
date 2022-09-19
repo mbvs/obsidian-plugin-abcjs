@@ -10,7 +10,7 @@ import {
   PluginSettingTab,
   Setting,
 } from "obsidian";
-import { signature, renderAbc, AbcVisualParams, synth } from "abcjs";
+import { renderAbc, AbcVisualParams, synth } from "abcjs";
 import CursorController from "CursorController";
 
 const optionsRegex = new RegExp(/(?<options>{.*})\n---\n(?<source>.*)/s);
@@ -21,13 +21,12 @@ const defaultOptions: AbcVisualParams = {
 
 export default class MusicPlugin extends Plugin {
   onload() {
-    console.log("loading abcjs plugin");
     this.registerMarkdownCodeBlockProcessor(
       "music-abc",
 
       async (source: string, el: HTMLElement, ctx) => {
         let userOptions: AbcVisualParams = {};
-        let error = null;
+        const errors = [];
         const optionsMatch = source.match(optionsRegex);
         if (optionsMatch !== null) {
           source = optionsMatch.groups["source"];
@@ -35,7 +34,9 @@ export default class MusicPlugin extends Plugin {
             userOptions = JSON.parse(optionsMatch.groups["options"]);
           } catch (e) {
             console.error(e);
-            error = `<strong>Failed to parse user-options</strong>\n\t${e}`;
+            errors.push(
+              `<strong>Failed to parse user-options</strong>\n\t${e}`
+            );
           }
         }
         const visualObj = renderAbc(
@@ -64,29 +65,37 @@ export default class MusicPlugin extends Plugin {
               visualObj: visualObj[0],
               options: {
                 callbackContext: this,
-                onEnded: function () {
+                onEnded: function (context) {
                   console.log("playback has ended");
                 },
-				soundFontUrl: "https://paulrosen.github.io/midi-js-soundfonts/MusyngKite/"
+                //soundFontUrl:
+                // "https://paulrosen.github.io/midi-js-soundfonts/MusyngKite/",
               },
             });
             console.log("audio successfully initialized");
-            const warning =
-              document.getElementsByClassName("abcjs-css-warning");
-            warning[0].parentNode.removeChild(warning[0]);
             try {
               await synthControl.setTune(visualObj[0], false, {});
               console.log(`audio loaded successfully`);
             } catch (error) {
-              console.warn(`error whild loading audio: ${error}`);
+              errors.push(
+                `<strong>Failed to generate audio</strong>\n\t${error}`
+              );
+              console.error(`error while loading audio: ${error}`);
             }
           } catch (error) {
-            console.log(`error while initializing audio ${error}`);
+            errors.push(
+              `<strong>Failed to initalizing audio</strong>\n\t${error}`
+            );
+            console.error(`error while initializing audio ${error}`);
           }
 
-          if (error !== null) {
+          const errorDiv = document.getElementsByClassName(
+            "obsidian-plugin-abcjs-error"
+          );
+
+          if (errors.length > 0) {
             const errorNode = document.createElement("div");
-            errorNode.innerHTML = error;
+            errorNode.innerHTML = errors.join("\n");
             errorNode.addClass("obsidian-plugin-abcjs-error");
             el.appendChild(errorNode);
           }
