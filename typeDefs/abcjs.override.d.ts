@@ -964,7 +964,7 @@ declare module 'abcjs' {
 		onReady?(): void
 		onStart?(): void
 		onFinished?(): void
-		onBeat?(beatNumber: number, totalBeats: number, totalTime: number): void
+		onBeat?:BeatCallback
 		onEvent?(event: NoteTimingEvent): void
 	}
 

@@ -214,7 +214,8 @@
 }
 
 .abcjs-container .abcjs-highlight path {
-  fill: var(--text-accent)
+  fill: var(--text-accent);
+  opacity: 1;
 }
 .abcjs-cursor {
   stroke: var(--text-accent);

@@ -1,17 +1,6 @@
-import {
-  App,
-  MarkdownPostProcessor,
-  MarkdownPostProcessorContext,
-  MarkdownPreviewRenderer,
-  MarkdownRenderer,
-  Modal,
-  Notice,
-  Plugin,
-  PluginSettingTab,
-  Setting,
-} from "obsidian";
-import { renderAbc, AbcVisualParams, synth } from "abcjs";
-import CursorController from "CursorController";
+import { Plugin } from "obsidian";
+import { renderAbc, AbcVisualParams } from "abcjs";
+import ScorePlayer from "src/ScorePlayer";
 
 const optionsRegex = new RegExp(/(?<options>{.*})\n---\n(?<source>.*)/s);
 const defaultOptions: AbcVisualParams = {
@@ -25,6 +14,8 @@ export default class MusicPlugin extends Plugin {
       "music-abc",
 
       async (source: string, el: HTMLElement, ctx) => {
+
+        // parse options
         let userOptions: AbcVisualParams = {};
         const errors = [];
         const optionsMatch = source.match(optionsRegex);
@@ -39,66 +30,27 @@ export default class MusicPlugin extends Plugin {
             );
           }
         }
+
+        // render score
         const visualObj = renderAbc(
           el,
           source,
           Object.assign(defaultOptions, userOptions)
         );
 
-        if (synth.supportsAudio) {
-          const audioWidget = document.createElement("div");
-          const widgetNode = el.parentNode.appendChild(audioWidget);
-          var cursorController = new CursorController(el);
+        // init score player
+        try {
+          const scorePlayer = new ScorePlayer(visualObj, el);
+          await scorePlayer.init();
+        } catch (error) {
+          errors.push(error);
+        }
 
-          const synthControl = new synth.SynthController();
-          synthControl.load(widgetNode, cursorController, {
-            displayLoop: true,
-            displayRestart: true,
-            displayPlay: true,
-            displayProgress: true,
-            displayWarp: true,
-          });
-
-          const createSynth = new synth.CreateSynth();
-          try {
-            await createSynth.init({
-              visualObj: visualObj[0],
-              options: {
-                callbackContext: this,
-                onEnded: function (context) {
-                  console.log("playback has ended");
-                },
-                //soundFontUrl:
-                // "https://paulrosen.github.io/midi-js-soundfonts/MusyngKite/",
-              },
-            });
-            console.log("audio successfully initialized");
-            try {
-              await synthControl.setTune(visualObj[0], false, {});
-              console.log(`audio loaded successfully`);
-            } catch (error) {
-              errors.push(
-                `<strong>Failed to generate audio</strong>\n\t${error}`
-              );
-              console.error(`error while loading audio: ${error}`);
-            }
-          } catch (error) {
-            errors.push(
-              `<strong>Failed to initalizing audio</strong>\n\t${error}`
-            );
-            console.error(`error while initializing audio ${error}`);
-          }
-
-          const errorDiv = document.getElementsByClassName(
-            "obsidian-plugin-abcjs-error"
-          );
-
-          if (errors.length > 0) {
-            const errorNode = document.createElement("div");
-            errorNode.innerHTML = errors.join("\n");
-            errorNode.addClass("obsidian-plugin-abcjs-error");
-            el.appendChild(errorNode);
-          }
+        if (errors.length > 0) {
+          const errorNode = document.createElement("div");
+          errorNode.innerHTML = errors.join("\n");
+          errorNode.addClass("obsidian-plugin-abcjs-error");
+          el.appendChild(errorNode);
         }
       }
     );
