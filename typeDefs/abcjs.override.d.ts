@@ -1,3 +1,8 @@
+declare module "*.svg" {
+    const content: any;
+    export default content;
+  }
+  
 declare module 'abcjs' {
 	//
 	// Enumerations
@@ -1021,12 +1026,14 @@ declare module 'abcjs' {
 	}
 
 	export interface AudioControlParams {
-		loopHandler: () => void;
-		restartHandler: () => void;
-		playPromiseHandler: () => Promise<any>;
-		progressHandler: (ev: any) => Promise<any>;
-		warpHandler: (ev: any) => Promise<any>;
-		afterResume: () => void;
+		loopHandler?: () => void;
+		restartHandler?: () => void;
+		playPromiseHandler?: () => Promise<any>;
+		progressHandler?: (ev: any) => Promise<any>;
+		playHandler?: (ev: any) => void
+		warpHandler?: (ev: any) => Promise<any>;
+		afterResume?: () => void;
+		hasClock?: boolean;
 	}
 	export interface MidiBuffer {
 		init(params?: MidiBufferOptions): Promise<MidiBufferPromise>

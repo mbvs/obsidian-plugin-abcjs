@@ -1,19 +1,18 @@
 import {
-    synth, SynthVisualOptions
+    synth, SynthObjectController, SynthVisualOptions, 
   } from "abcjs";
 import CursorController from "./CursorController";
 import SynthWidget from "./SynthWidget";
 
-export default class SynthController extends synth.SynthController {
+export default class SynthController extends synth.SynthController implements SynthObjectController {
 
     constructor() {
         super()
         console.log('extended SynthController instantiated')
     }
 
-    load = function (selector: string | HTMLElement, cursorControl?: CursorController, visualOptions?: SynthVisualOptions) {
-		if (!visualOptions)
-			visualOptions = {};
+    load = function(selector: string | HTMLElement, cursorControl: CursorController, visualOptions?: SynthVisualOptions) {
+
 		this.control = new SynthWidget(selector, {
 			loopHandler: visualOptions.displayLoop ? this.toggleLoop : undefined,
 			restartHandler: visualOptions.displayRestart ? this.restart : undefined,

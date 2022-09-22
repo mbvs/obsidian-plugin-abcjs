@@ -39,8 +39,6 @@ export default class ScorePlayer {
 
     // create synthController
     const synthController = new SynthController()
-    
-    // const synthController = new synth.SynthController();
     synthController.load(widgetNode, cursorController, this.widgetOptions);
 
     // set the tune

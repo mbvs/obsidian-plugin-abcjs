@@ -25,6 +25,14 @@
 
 /* Some basic CSS to make the Audio controls in abcjs presentable. */
 
+.music-abc-root {
+  height: 42px;
+  background-color: var(--text-muted);
+  border-radius: 21px;
+  color: black;
+  padding: 10px;
+  padding-left: 25px;
+}
 .abcjs-inline-audio {
   height: 26px;
   padding: 0 5px;
