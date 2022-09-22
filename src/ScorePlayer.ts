@@ -1,5 +1,6 @@
 import { synth, TuneObjectArray, TuneObject } from "abcjs";
 import CursorController from "./CursorController";
+import SynthController from "./SynthController";
 
 export default class ScorePlayer {
 
@@ -11,7 +12,7 @@ export default class ScorePlayer {
     displayRestart: true,
     displayPlay: true,
     displayProgress: true,
-    displayWarp: true,
+    displayWarp: false,
   };
 
   constructor(visualObjs: TuneObjectArray, rootElement: HTMLElement) {
@@ -37,7 +38,9 @@ export default class ScorePlayer {
     const cursorController = new CursorController(this.rootElement);
 
     // create synthController
-    const synthController = new synth.SynthController();
+    const synthController = new SynthController()
+    
+    // const synthController = new synth.SynthController();
     synthController.load(widgetNode, cursorController, this.widgetOptions);
 
     // set the tune

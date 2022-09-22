@@ -1020,6 +1020,14 @@ declare module 'abcjs' {
 		setProgress: (percent: number, totalTime: number) => void;
 	}
 
+	export interface AudioControlParams {
+		loopHandler: () => void;
+		restartHandler: () => void;
+		playPromiseHandler: () => Promise<any>;
+		progressHandler: (ev: any) => Promise<any>;
+		warpHandler: (ev: any) => Promise<any>;
+		afterResume: () => void;
+	}
 	export interface MidiBuffer {
 		init(params?: MidiBufferOptions): Promise<MidiBufferPromise>
 		prime(): Promise<void>
@@ -1063,11 +1071,12 @@ declare module 'abcjs' {
 		let SynthController: { new (): SynthObjectController }
 		let CreateSynth: { new (): MidiBuffer }
 		let SynthSequence: { new (): SynthSequenceClass }
+		let CreateSynthControl: { new (element: Selector, options: AudioControlParams): AudioControl }
 
 		export function supportsAudio(): boolean
 		export function registerAudioContext(ac?: AudioContext): boolean
 		export function activeAudioContext(): AudioContext
-		export function CreateSynthControl(element: Selector, options: AbcVisualParams): AudioControl
+		//export function CreateSynthControl(element: Selector, options: AbcVisualParams): AudioControl
 		export function getMidiFile(source: String | TuneObject, options?: MidiFileOptions): MidiFile;
 		export function playEvent(pitches: MidiPitches, graceNotes: MidiGracePitches, milliSecondsPerMeasure: number): Promise<void>;
 		export function sequence(visualObj: TuneObject, options: AbcVisualParams): AudioSequence
