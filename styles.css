@@ -26,13 +26,91 @@
 /* Some basic CSS to make the Audio controls in abcjs presentable. */
 
 .music-abc-root {
-  height: 42px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
   background-color: var(--text-muted);
   border-radius: 21px;
-  color: black;
-  padding: 10px;
-  padding-left: 25px;
+  color: white;
+  padding: 0px 10px;
+  margin: 20px 10px 0 10px;
 }
+
+.music-abc-btn {
+  margin: 0;
+  padding: 0;
+  color: white;
+  height: 36px;
+  width: 36px;
+  background: transparent no-repeat center/20px;
+  flex: 0 0 auto;
+}
+
+.music-abc-btn:hover {
+  background-color: transparent;
+}
+
+.music-abc-btn-timer {
+  color: var(--background-primary);
+  font-size: 14px;
+  text-align: center;
+  width: 96px;
+}
+
+.music-abc-progress {
+  margin: 0 8px 0 4px;
+  flex: auto;
+}
+
+input[type=range].music-abc-progress::-webkit-slider-thumb {
+  /* display: none; */
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background-color: var(--background-primary);
+  cursor: pointer;
+  margin-top: -1.5px;
+}
+input[type=range].music-abc-progress::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  background-color: var(--background-modifier-border);
+  border-radius: 2px;
+}
+
+.music-abc-btn-play {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M8 5v14l11-7z"/></svg>');
+}
+
+.music-abc-btn-pause {
+  display: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>');
+}
+
+.music-abc-btn-loading {
+  display: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>');
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{
+	from{transform:rotate(0deg)}
+	to{transform:rotate(360deg)}	
+}
+
+.music-abc-btn-volume-on {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>');
+}
+.music-abc-btn-volume-off {
+  display: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>');
+}
+.music-abc-btn-more {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>');
+}
+
+
+
 .abcjs-inline-audio {
   height: 26px;
   padding: 0 5px;

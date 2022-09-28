@@ -58,13 +58,64 @@ export default class SynthWidget {
 
   private buildGUI() {
     this.widgetRoot = document.createElement("div");
-    this.widgetRoot.addClass('music-abc-root');
-    let el = document.createElement("div")
-    el.addClass("music-abc-play")
-    el.innerHTML = play
+    this.widgetRoot.addClass("music-abc-root");
+    this.widgetRoot.innerHTML = `
+    <button class="music-abc-btn music-abc-btn-play"></button>
+    <button class="music-abc-btn music-abc-btn-pause"></button>
+    <button class="music-abc-btn music-abc-btn-loading"></button>
+    <div class="music-abc-btn-timer">0:00 / 0:00</div>
+    <input class="music-abc-progress" type="range"></input>
+    <button class="music-abc-btn music-abc-btn-volume-on"></button>
+    <button class="music-abc-btn music-abc-btn-volume-off"></button>
+    <button class="music-abc-btn music-abc-btn-more"></button>
+    `;
     this.parent.insertAdjacentElement("afterbegin", this.widgetRoot);
-    this.widgetRoot.insertAdjacentElement('afterbegin', el);
-    console.log(this.widgetRoot);
+
+    const play = this.widgetRoot.querySelector(".music-abc-btn-play");
+    const loading = this.widgetRoot.querySelector(".music-abc-btn-loading");
+    const pause = this.widgetRoot.querySelector(".music-abc-btn-pause");
+    const volumeOn = this.widgetRoot.querySelector(".music-abc-btn-volume-on");
+    const volumeOff = this.widgetRoot.querySelector(
+      ".music-abc-btn-volume-off"
+    );
+    const timer = this.widgetRoot.querySelector(".music-abc-btn-timer");
+
+    let timerInterval: NodeJS.Timeout;
+
+    play.addEventListener("click", (e) => {
+      play.setAttr("style", "display: none");
+
+      loading.setAttr("style", "display: block");
+      setTimeout(() => {
+        loading.setAttr("style", "display: none");
+        pause.setAttr("style", "display: block");
+        let now = 0;
+        timerInterval = setInterval(() => {
+          now++
+          const min = Math.floor(now/60);
+          const sec = now - min * 60
+          timer.innerHTML = `${min}:${sec < 10 ? 0 : ""}${sec} / 0:00`
+        }, 1000)
+      }, 500);
+    });
+
+    pause.addEventListener("click", (e) => {
+      pause.setAttr("style", "display: none");
+      play.setAttr("style", "display: block");
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    });
+
+    volumeOn.addEventListener("click", (e) => {
+      volumeOn.setAttr("style", "display: none");
+      volumeOff.setAttr("style", "display: block");
+    });
+
+    volumeOff.addEventListener("click", (e) => {
+      volumeOff.setAttr("style", "display: none");
+      volumeOn.setAttr("style", "display: block");
+    });
   }
 
   buildDom = function (parent: HTMLElement, options: AudioControlParams) {
