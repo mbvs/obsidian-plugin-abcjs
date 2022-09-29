@@ -1,8 +1,6 @@
 import { AudioControl, AudioControlParams } from "abcjs";
 import { Selector } from "abcjs";
 import { synth } from "abcjs";
-import loop from "./assets/loop.svg";
-import play from "./assets/play.svg";
 
 export default class SynthWidget {
   parent: HTMLElement;
@@ -63,8 +61,8 @@ export default class SynthWidget {
     <button class="music-abc-btn music-abc-btn-play"></button>
     <button class="music-abc-btn music-abc-btn-pause"></button>
     <button class="music-abc-btn music-abc-btn-loading"></button>
-    <div class="music-abc-btn-timer">0:00 / 0:00</div>
-    <input class="music-abc-progress" type="range"></input>
+    <div class="music-abc-timer">0:00 / 0:00</div>
+    <input class="music-abc-progress" type="range" value="0" min="0" max="100"></input>
     <button class="music-abc-btn music-abc-btn-volume-on"></button>
     <button class="music-abc-btn music-abc-btn-volume-off"></button>
     <button class="music-abc-btn music-abc-btn-more"></button>
@@ -73,13 +71,15 @@ export default class SynthWidget {
 
     const play = this.widgetRoot.querySelector(".music-abc-btn-play");
     const loading = this.widgetRoot.querySelector(".music-abc-btn-loading");
+    const progress = this.widgetRoot.querySelector(".music-abc-progress") as HTMLInputElement;
     const pause = this.widgetRoot.querySelector(".music-abc-btn-pause");
     const volumeOn = this.widgetRoot.querySelector(".music-abc-btn-volume-on");
     const volumeOff = this.widgetRoot.querySelector(
       ".music-abc-btn-volume-off"
     );
-    const timer = this.widgetRoot.querySelector(".music-abc-btn-timer");
 
+
+    const timer = this.widgetRoot.querySelector(".music-abc-timer");
     let timerInterval: NodeJS.Timeout;
 
     play.addEventListener("click", (e) => {
@@ -92,12 +92,18 @@ export default class SynthWidget {
         let now = 0;
         timerInterval = setInterval(() => {
           now++
-          const min = Math.floor(now/60);
+          progress.value = now.toString()
+          progress.dispatchEvent(new Event('input'))
+          const min = Math.floor(now/60)
           const sec = now - min * 60
           timer.innerHTML = `${min}:${sec < 10 ? 0 : ""}${sec} / 0:00`
         }, 1000)
       }, 500);
     });
+
+    progress.addEventListener('input', () => {
+      progress.style.setProperty('--value', `${progress.value}%`);
+    })
 
     pause.addEventListener("click", (e) => {
       pause.setAttr("style", "display: none");
@@ -118,40 +124,4 @@ export default class SynthWidget {
     });
   }
 
-  buildDom = function (parent: HTMLElement, options: AudioControlParams) {
-    console.log("calling buildDOM");
-    var hasLoop = !!options.loopHandler;
-    var hasRestart = !!options.restartHandler;
-    var hasPlay = !!options.playHandler || !!options.playPromiseHandler;
-    var hasProgress = !!options.progressHandler;
-    var hasWarp = !!options.warpHandler;
-    var hasClock = options.hasClock !== false;
-
-    var html = '<div class="abcjs-inline-audio">\n';
-    if (hasLoop) {
-      html +=
-        '<button type="button" class="abcjs-midi-loop abcjs-btn">' +
-        loop +
-        "</button>\n";
-    }
-    // if (hasRestart) {
-    //     html += '<button type="button" class="abcjs-midi-reset abcjs-btn">' + reset + '</button>\n';
-    // }
-    // if (hasPlay) {
-    //     html += '<button type="button" class="abcjs-midi-start abcjs-btn">' + loading + '</button>\n';
-    // }
-    if (hasProgress) {
-      html +=
-        '<button type="button" class="abcjs-midi-progress-background"><span class="abcjs-midi-progress-indicator"></span></button>\n';
-    }
-    if (hasClock) {
-      html += '<span class="abcjs-midi-clock"></span>\n';
-    }
-    if (hasWarp) {
-      html +=
-        '<span class="abcjs-tempo-wrapper"><label><input class="abcjs-midi-tempo" type="number" min="1" max="300" value="100">%</label><span>&nbsp;(<span class="abcjs-midi-current-tempo"></span>BPM)</span></span>\n';
-    }
-    html += "</div>\n";
-    parent.innerHTML = html;
-  };
 }
