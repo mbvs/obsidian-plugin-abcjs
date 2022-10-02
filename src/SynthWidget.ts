@@ -63,21 +63,24 @@ export default class SynthWidget {
     <button class="music-abc-btn music-abc-btn-loading"></button>
     <div class="music-abc-timer">0:00 / 0:00</div>
     <input class="music-abc-progress" type="range" value="0" min="0" max="100"></input>
-    <button class="music-abc-btn music-abc-btn-volume-on"></button>
-    <button class="music-abc-btn music-abc-btn-volume-off"></button>
+    <div class="music-abc-volume">
+      <input class="music-abc-volume-slider" type="range" value="100" min="0" max="100"></input>
+      <button class="music-abc-btn music-abc-btn-volume"></button>
+    </div>
     <button class="music-abc-btn music-abc-btn-more"></button>
     `;
     this.parent.insertAdjacentElement("afterbegin", this.widgetRoot);
 
     const play = this.widgetRoot.querySelector(".music-abc-btn-play");
     const loading = this.widgetRoot.querySelector(".music-abc-btn-loading");
-    const progress = this.widgetRoot.querySelector(".music-abc-progress") as HTMLInputElement;
+    const progress = this.widgetRoot.querySelector(
+      ".music-abc-progress"
+    ) as HTMLInputElement;
     const pause = this.widgetRoot.querySelector(".music-abc-btn-pause");
-    const volumeOn = this.widgetRoot.querySelector(".music-abc-btn-volume-on");
-    const volumeOff = this.widgetRoot.querySelector(
-      ".music-abc-btn-volume-off"
-    );
-
+    const volumeBtn = this.widgetRoot.querySelector(".music-abc-btn-volume");
+    const volumeSlider = this.widgetRoot.querySelector(
+      ".music-abc-volume-slider"
+    ) as HTMLInputElement;
 
     const timer = this.widgetRoot.querySelector(".music-abc-timer");
     let timerInterval: NodeJS.Timeout;
@@ -91,19 +94,19 @@ export default class SynthWidget {
         pause.setAttr("style", "display: block");
         let now = 0;
         timerInterval = setInterval(() => {
-          now++
-          progress.value = now.toString()
-          progress.dispatchEvent(new Event('input'))
-          const min = Math.floor(now/60)
-          const sec = now - min * 60
-          timer.innerHTML = `${min}:${sec < 10 ? 0 : ""}${sec} / 0:00`
-        }, 1000)
+          now++;
+          progress.value = now.toString();
+          progress.dispatchEvent(new Event("input"));
+          const min = Math.floor(now / 60);
+          const sec = now - min * 60;
+          timer.innerHTML = `${min}:${sec < 10 ? 0 : ""}${sec} / 0:00`;
+        }, 1000);
       }, 500);
     });
 
-    progress.addEventListener('input', () => {
-      progress.style.setProperty('--value', `${progress.value}%`);
-    })
+    progress.addEventListener("input", () => {
+      progress.style.setProperty("--value", `${progress.value}%`);
+    });
 
     pause.addEventListener("click", (e) => {
       pause.setAttr("style", "display: none");
@@ -113,15 +116,16 @@ export default class SynthWidget {
       }
     });
 
-    volumeOn.addEventListener("click", (e) => {
-      volumeOn.setAttr("style", "display: none");
-      volumeOff.setAttr("style", "display: block");
+    volumeBtn.addEventListener("click", (e) => {
+      volumeBtn.classList.toggle("off");
+      volumeSlider.value = volumeBtn.classList.contains("off") ? "0" : "100";
     });
 
-    volumeOff.addEventListener("click", (e) => {
-      volumeOff.setAttr("style", "display: none");
-      volumeOn.setAttr("style", "display: block");
+    volumeSlider.addEventListener("input", (e) => {
+      volumeSlider.style.setProperty("--value", `${volumeSlider.value}%`);
+      if (volumeSlider.value === "0" || volumeBtn.classList.contains("off")) {
+        volumeBtn.classList.toggle("off");
+      }
     });
   }
-
 }
