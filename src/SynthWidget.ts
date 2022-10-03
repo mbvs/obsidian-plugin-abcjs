@@ -62,6 +62,7 @@ export default class SynthWidget {
     // build GUI as string
     this.widgetRoot = document.createElement("div");
     this.widgetRoot.addClass("music-abc-root");
+    this.widgetRoot.id = 'music-abc-root';
     this.widgetRoot.innerHTML = `
     <button class="music-abc-btn music-abc-btn-play"></button>
     <button class="music-abc-btn music-abc-btn-pause"></button>
