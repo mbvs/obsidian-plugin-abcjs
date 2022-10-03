@@ -54,7 +54,12 @@ export default class SynthWidget {
     // }
   };
 
+  /**
+   * Constructs the player GUI
+   * and wires up the buttons and sliders
+   */
   private buildGUI() {
+    // build GUI as string
     this.widgetRoot = document.createElement("div");
     this.widgetRoot.addClass("music-abc-root");
     this.widgetRoot.innerHTML = `
@@ -67,10 +72,19 @@ export default class SynthWidget {
       <input class="music-abc-volume-slider" type="range" value="100" min="0" max="100"></input>
       <button class="music-abc-btn music-abc-btn-volume"></button>
     </div>
-    <button class="music-abc-btn music-abc-btn-more"></button>
+    <button class="music-abc-btn music-abc-btn-more">
+      <ul>
+        <li>2x</li>
+        <li>1.5x</li>
+        <li class="selected">1x</li>
+        <li>0.75x</li>
+        <li>.5x</li>
+      </ul>
+    </button>
     `;
     this.parent.insertAdjacentElement("afterbegin", this.widgetRoot);
 
+    // get handles for btns etc.
     const play = this.widgetRoot.querySelector(".music-abc-btn-play");
     const loading = this.widgetRoot.querySelector(".music-abc-btn-loading");
     const progress = this.widgetRoot.querySelector(
@@ -81,10 +95,12 @@ export default class SynthWidget {
     const volumeSlider = this.widgetRoot.querySelector(
       ".music-abc-volume-slider"
     ) as HTMLInputElement;
-
+    const moreBtn = this.widgetRoot.querySelector(".music-abc-btn-more");
+    const warpBtns = moreBtn.querySelectorAll("li");
     const timer = this.widgetRoot.querySelector(".music-abc-timer");
     let timerInterval: NodeJS.Timeout;
 
+    // wire up btns etc.
     play.addEventListener("click", (e) => {
       play.setAttr("style", "display: none");
 
@@ -126,6 +142,24 @@ export default class SynthWidget {
       if (volumeSlider.value === "0" || volumeBtn.classList.contains("off")) {
         volumeBtn.classList.toggle("off");
       }
+    });
+
+    moreBtn.addEventListener("mouseover", (e) => {
+      moreBtn.querySelector("ul").classList.toggle("active");
+    });
+
+    moreBtn.addEventListener("mouseout", (e) => {
+      moreBtn.querySelector("ul").classList.toggle("active");
+    });
+
+    warpBtns.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        warpBtns.forEach((btn) => {
+          btn.classList.remove("selected");
+        });
+        const current = e.target as HTMLElement;
+        current.classList.add("selected");
+      });
     });
   }
 }
