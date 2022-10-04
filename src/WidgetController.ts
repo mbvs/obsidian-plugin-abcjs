@@ -140,7 +140,7 @@ export default class WidgetController {
 
   private wireUp(delegate: AudioControlParams) {
 
-
+    // TODO: second play doesn't work!
     this.play.addEventListener("click", async (e) => {
       this.play.setAttr("style", "display: none");
       this.loading.setAttr("style", "display: block");

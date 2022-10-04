@@ -53,8 +53,6 @@ export default class CursorController implements CursorControl {
    * called when a note/rest event is reached
    */
   onEvent(event: NoteTimingEvent) {
-
-    console.log(event);
     this.removeHighlights();
 
     // move the cursor to the location of the current note
