@@ -1,27 +1,30 @@
 import {
+	AudioControlParams,
     synth, SynthObjectController, SynthVisualOptions, 
   } from "abcjs";
 import CursorController from "./CursorController";
-import SynthWidget from "./SynthWidget";
+import WidgetController from "./WidgetController";
 
 export default class SynthController extends synth.SynthController implements SynthObjectController {
 
+
     constructor() {
         super()
+		this.disable(true);
         console.log('extended SynthController instantiated')
     }
 
-    load = function(selector: string | HTMLElement, cursorControl: CursorController, visualOptions?: SynthVisualOptions) {
-
-		this.control = new SynthWidget(selector, {
-			loopHandler: visualOptions.displayLoop ? this.toggleLoop : undefined,
-			restartHandler: visualOptions.displayRestart ? this.restart : undefined,
-			playPromiseHandler: visualOptions.displayPlay ? this.play : undefined,
-			progressHandler: visualOptions.displayProgress ? this.randomAccess : undefined,
-			warpHandler: visualOptions.displayWarp ? this.onWarp : undefined,
-			afterResume: this.init
-		});
+    init = function(widgetControl: WidgetController, cursorControl: CursorController) {
+		this.control = widgetControl;
+		this.control.setDelegate(this as AudioControlParams);
 		this.cursorControl = cursorControl;
-		this.disable(true);
+
 	};
+
+	loopHandler = this.toggleLoop;
+	restartHandler = this.restart;
+	playPromiseHandler = this.play;
+	progressHandler = () => {}; //this.randomAccess;
+	warpHandler = this.setWarp;
+	afterResume = this.init;
 }

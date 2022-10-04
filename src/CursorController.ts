@@ -21,16 +21,6 @@ export default class CursorController implements CursorControl {
    */
   onReady() {
     console.log("ready");
-  }
-
-  /**
-   * Livecycle Event
-   * 
-   * called when play button is pressed
-   */
-  onStart() {
-    console.log("start");
-
     if (!this.cursor) {
       // create the cursor and add it to the sheet music's svg.
       this.cursor = document.createElementNS(
@@ -40,7 +30,15 @@ export default class CursorController implements CursorControl {
       this.cursor.setAttribute("class", "abcjs-cursor");
       this.rootElement.querySelector("svg").appendChild(this.cursor);
     }
+  }
 
+  /**
+   * Livecycle Event
+   * 
+   * called when play button is pressed
+   */
+  onStart() {
+    console.log("start");
     this.cursor.setAttributeNS(null, "x1", "0");
     this.cursor.setAttributeNS(null, "y1", "0");
     this.cursor.setAttributeNS(null, "x2", "0");
@@ -55,8 +53,8 @@ export default class CursorController implements CursorControl {
    * called when a note/rest event is reached
    */
   onEvent(event: NoteTimingEvent) {
-    console.log("event");
 
+    console.log(event);
     this.removeHighlights();
 
     // move the cursor to the location of the current note
@@ -88,7 +86,6 @@ export default class CursorController implements CursorControl {
     position: TimingCallbacksPosition,
     debugInfo: TimingCallbacksDebug
   ) {
-    console.log("beat");
   }
 
   /**

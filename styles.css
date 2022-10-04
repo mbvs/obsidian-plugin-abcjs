@@ -70,7 +70,7 @@ body.theme-dark {
   border: none !important;
 }
 
-.music-abc-timer {
+.music-abc-elapsed {
   color: var(--music-abc-foreground);
   font-size: 14px;
   text-align: center;
@@ -192,17 +192,15 @@ input[type="range"].music-abc-volume-slider::-webkit-slider-runnable-track {
   transition-timing-function: ease-in-out;
 }
 
-.music-abc-btn-more ul > li {
-  min-height: 0;
-  line-height: 1.2em;
-}
 .music-abc-btn-more ul.active {
   box-shadow: rgba(0, 0, 0, 0.4) 0px 1px 9px 0px;
   height: 164px;
 }
 
-.music-abc-btn-more ul li {
+.music-abc-btn-more ul > li {
   cursor: pointer;
+  min-height: 0;
+  line-height: 1.2em;
   list-style-type: none;
   padding: 8px 6px;
   margin: 0;
