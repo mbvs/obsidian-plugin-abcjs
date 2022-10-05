@@ -9,15 +9,17 @@ export default class WidgetController {
   options: SynthVisualOptions = {};
   delegate: AudioControlParams; // SynthConroller
 
-  play: HTMLButtonElement;
-  loading: HTMLButtonElement;
-  progress: HTMLInputElement;
-  pause: HTMLButtonElement;
+  playBtn: HTMLButtonElement;
+  loadingSpn: HTMLButtonElement;
+  progressSlider: HTMLInputElement;
+  pauseBtn: HTMLButtonElement;
   volumeBtn: HTMLButtonElement;
   volumeSlider: HTMLInputElement;
   moreBtn: HTMLUListElement;
   warpBtns: NodeListOf<HTMLLIElement>;
-  elapsed: HTMLElement;
+  elapsedTxt: HTMLElement;
+
+  bpm: number;
 
   constructor(rootElement: HTMLElement, options: SynthVisualOptions = {}) {
     this.parent = rootElement.parentElement;
@@ -25,6 +27,9 @@ export default class WidgetController {
     this.buildGUI();
   }
 
+  /**
+   * Sets the SynthController as a Delegate
+   */
   setDelegate(delegate: AudioControlParams) {
     this.delegate = delegate;
     this.wireUp(this.delegate);
@@ -51,23 +56,23 @@ export default class WidgetController {
     // self.setTempo(tempo)
   }
   setTempo(tempo: any) {
-    // var el = self.parent.querySelector(".abcjs-midi-current-tempo");
-    // if (el)
-    // 	el.innerHTML = Math.round(tempo);
+    this.bpm = tempo;
+    console.log('tempo set: ', this.bpm);
   }
 
   pushPlay(pause: boolean) {
     console.log("pushplay: ", pause);
     if (pause) {
-      this.play.setAttr("style", "display: none");
-      this.loading.setAttr("style", "display: none");
-      this.pause.setAttr("style", "display: block");
+      this.playBtn.setAttr("style", "display: none");
+      this.loadingSpn.setAttr("style", "display: none");
+      this.pauseBtn.setAttr("style", "display: block");
     } else {
-      this.play.setAttr("style", "display: block");
-      this.loading.setAttr("style", "display: none");
-      this.pause.setAttr("style", "display: none");
+      this.playBtn.setAttr("style", "display: block");
+      this.loadingSpn.setAttr("style", "display: none");
+      this.pauseBtn.setAttr("style", "display: none");
     }
   }
+
   pushLoop(push: boolean) {
     // var loopButton = self.parent.querySelector(".abcjs-midi-loop");
     // if (!loopButton)
@@ -79,14 +84,22 @@ export default class WidgetController {
   }
 
   setProgress(percent: number, total: number) {
-    console.log(`${percent} : ${total}`);
+    //console.log(`${percent} : ${total}`);
     const elapsed = (total * percent) / 1000;
-    this.elapsed.innerHTML = `${this.getTimeFormatted(elapsed)} / ${this.getTimeFormatted(total/1000)}`
+    this.elapsedTxt.innerHTML = `${this.getTimeFormatted(
+      elapsed
+    )} / ${this.getTimeFormatted(total / 1000)}`;
 
-    this.progress.value = (percent * 100).toString();
-    this.progress.style.setProperty("--value", `${this.progress.value}%`);
+    this.progressSlider.value = (percent * 100).toString();
+    this.progressSlider.style.setProperty(
+      "--value",
+      `${this.progressSlider.value}%`
+    );
   }
 
+  /**
+   * Returns a neatly formatted time string
+   */
   private getTimeFormatted(seconds: number) {
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
@@ -123,86 +136,57 @@ export default class WidgetController {
     </button>
     `;
     this.parent.insertAdjacentElement("beforeend", this.widgetRoot);
-    this.play = this.widgetRoot.querySelector(".music-abc-btn-play");
-    this.loading = this.widgetRoot.querySelector(".music-abc-btn-loading");
-    this.progress = this.widgetRoot.querySelector(
+    this.playBtn = this.widgetRoot.querySelector(".music-abc-btn-play");
+    this.loadingSpn = this.widgetRoot.querySelector(".music-abc-btn-loading");
+    this.progressSlider = this.widgetRoot.querySelector(
       ".music-abc-progress"
     ) as HTMLInputElement;
-    this.pause = this.widgetRoot.querySelector(".music-abc-btn-pause");
+    this.pauseBtn = this.widgetRoot.querySelector(".music-abc-btn-pause");
     this.volumeBtn = this.widgetRoot.querySelector(".music-abc-btn-volume");
     this.volumeSlider = this.widgetRoot.querySelector(
       ".music-abc-volume-slider"
     ) as HTMLInputElement;
     this.moreBtn = this.widgetRoot.querySelector(".music-abc-btn-more");
     this.warpBtns = this.moreBtn.querySelectorAll("li");
-    this.elapsed = this.widgetRoot.querySelector(".music-abc-elapsed");
+    this.elapsedTxt = this.widgetRoot.querySelector(".music-abc-elapsed");
   }
 
+  /**
+   * sets the eventListeners for the Btns etc.
+   * calls the appropriate delegate methods
+   */
   private wireUp(delegate: AudioControlParams) {
-
     // TODO: second play doesn't work!
-    this.play.addEventListener("click", async (e) => {
-      this.play.setAttr("style", "display: none");
-      this.loading.setAttr("style", "display: block");
+    this.playBtn.addEventListener("click", async (e) => {
+      this.playBtn.setAttr("style", "display: none");
+      this.loadingSpn.setAttr("style", "display: block");
       if (!synth.activeAudioContext()) {
         synth.registerAudioContext();
       }
-      const response = await this.delegate.playPromiseHandler();
+
+      const response = await this.delegate.playPromiseHandler(true);
       console.log("play pressed", response);
       // possible: ok, created, loading?
       if (response.status === "ok") {
       }
-
-      // playBtn.addEventListener("click", function(ev){
-      //   acResumerMiddleWare(
-      //     self.options.playPromiseHandler || self.options.playHandler,
-      //     ev,
-      //     playBtn,
-      //     self.options.afterResume,
-      //     !!self.options.playPromiseHandler)
-      // });
-
-      // function acResumerMiddleWare(next, ev, playBtn, afterResume, isPromise) {
-      //   var needsInit = true;
-      //   if (!activeAudioContext()) {
-      //     registerAudioContext();
-      //   } else {
-      //     needsInit = activeAudioContext().state === "suspended";
-      //   }
-      //   if (!supportsAudio()) {
-      //     throw { status: "NotSupported", message: "This browser does not support audio."};
-      //   }
-
-      //   if ((needsInit || isPromise) && playBtn)
-      //     playBtn.classList.add("abcjs-loading");
-
-      //   if (needsInit) {
-      //     activeAudioContext().resume().then(function () {
-      //       if (afterResume) {
-      //         afterResume().then(function (response) {
-      //           doNext(next, ev, playBtn, isPromise);
-      //         });
-      //       } else {
-      //         doNext(next, ev, playBtn, isPromise);
-      //       }
-      //     });
-      //   } else {
-      //     doNext(next, ev, playBtn, isPromise);
-      //   }
-      // }
     });
 
-    this.pause.addEventListener("click", async (e) => {
-      const response = await this.delegate.playPromiseHandler();
+    this.pauseBtn.addEventListener("click", async (e) => {
+      const response = await this.delegate.playPromiseHandler(false);
       console.log("pause pressed", response);
-      this.pause.setAttr("style", "display: none");
-      this.play.setAttr("style", "display: block");
+      this.pauseBtn.setAttr("style", "display: none");
+      this.playBtn.setAttr("style", "display: block");
     });
 
-    this.progress.addEventListener("input", () => {
-      this.progress.style.setProperty("--value", `${this.progress.value}%`);
+    // TODO
+    this.progressSlider.addEventListener("input", () => {
+      this.progressSlider.style.setProperty(
+        "--value",
+        `${this.progressSlider.value}%`
+      );
     });
 
+    // TODO
     this.volumeBtn.addEventListener("click", (e) => {
       this.volumeBtn.classList.toggle("off");
       this.volumeSlider.value = this.volumeBtn.classList.contains("off")
@@ -210,6 +194,7 @@ export default class WidgetController {
         : "100";
     });
 
+    // TODO
     this.volumeSlider.addEventListener("input", (e) => {
       this.volumeSlider.style.setProperty(
         "--value",
@@ -231,8 +216,9 @@ export default class WidgetController {
       this.moreBtn.querySelector("ul").classList.toggle("active");
     });
 
+    // TODO: starts immediatly, sometimes stumbles
     this.warpBtns.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+      btn.addEventListener("click", async (e) => {
         this.warpBtns.forEach((btn) => {
           btn.classList.remove("selected");
         });
@@ -240,6 +226,11 @@ export default class WidgetController {
         const percent = parseFloat(current.innerHTML.slice(0, -1)) * 100;
         current.classList.add("selected");
         this.delegate.warpHandler(percent);
+        // const response = await this.delegate.playPromiseHandler();
+        // console.log("warp changed", response);
+        // // possible: ok, created, loading?
+        // if (response.status === "ok") {
+        // }
       });
     });
   }

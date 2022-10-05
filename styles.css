@@ -107,6 +107,20 @@ body.theme-dark {
   border-radius: 2px;
 }
 
+.music-abc-cursor {
+  stroke: var(--text-accent);
+  opacity: .5;
+  display: block;
+}
+
+.music-abc-cursor.hide {
+  display: none;
+}
+
+.abcjs-container .music-abc-note-highlight path {
+  fill: var(--text-accent);
+  opacity: 1;
+}
 
 .music-abc-btn-play {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black"><path d="M0 0h24v24H0z" fill="none"/><path d="M8 5v14l11-7z"/></svg>');
@@ -412,11 +426,5 @@ body.theme-dark .music-abc-btn-more ul li {
   display: none;
 }
 
-.abcjs-container .abcjs-highlight path {
-  fill: var(--text-accent);
-  opacity: 1;
-}
-.abcjs-cursor {
-  stroke: var(--text-accent);
-  opacity: 0.2;
-}
+
+

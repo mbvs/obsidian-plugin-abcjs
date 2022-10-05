@@ -965,7 +965,7 @@ declare module 'abcjs' {
 	// Audio
 	export interface CursorControl {
 		beatSubDivision?: number
-
+		noteTimingEvents: NoteTimingEvent[];
 		onReady?(): void
 		onStart?(): void
 		onFinished?(): void
@@ -1028,7 +1028,7 @@ declare module 'abcjs' {
 	export interface AudioControlParams {
 		loopHandler?: () => void;
 		restartHandler?: () => void;
-		playPromiseHandler?: () => Promise<any>;
+		playPromiseHandler?: (play: boolean) => Promise<any>;
 		progressHandler?: (ev: any) => Promise<any>;
 		playHandler?: (ev: any) => void
 		warpHandler?: (ev: any) => Promise<any>;
@@ -1057,7 +1057,7 @@ declare module 'abcjs' {
 
 	export interface SynthObjectController {
 		disable(isDisabled: boolean): void
-		setTune(visualObj: TuneObject, userAction: Boolean, audioParams?: AbcVisualParams): Promise<SynthInitResponse>
+		setTune(visualObj: TuneObject, userAction: Boolean, audioParams?: SynthOptions): Promise<SynthInitResponse>
 		load(selector: string | HTMLElement, cursorControl?: any, visualOptions?: SynthVisualOptions): void
 		play(): void
 		pause(): void
@@ -1066,6 +1066,8 @@ declare module 'abcjs' {
 		setProgress(ev: number): void
 		setWarp(percent: number): void
 		download(fName: string): void
+		currentTempo: number
+		timer: TimingCallbacks
 	}
 
 	export interface SynthSequenceClass {
