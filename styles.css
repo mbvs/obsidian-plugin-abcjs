@@ -109,6 +109,7 @@ body.theme-dark {
 
 .music-abc-cursor {
   stroke: var(--text-accent);
+  stroke-width: 12;
   opacity: .5;
   display: block;
 }

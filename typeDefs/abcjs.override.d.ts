@@ -737,6 +737,7 @@ declare module 'abcjs' {
 		setUpAudio: (options: SynthOptions) => AudioTracks;
 		lineBreaks?: Array<number>;
 		visualTranspose?: number;
+		makeVoicesArray: () => Array<Array<{measureNumber: number, elem: AbsoluteElement}>>
 	}
 
 	export type TuneObjectArray = [TuneObject]

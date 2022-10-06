@@ -11,12 +11,12 @@ import SynthController from "./SynthController";
 import WidgetController from "./WidgetController";
 
 export default class ScorePlayer {
-  visualObj: TuneObject;
+  tune: TuneObject;
   rootElement: HTMLElement;
 
   constructor(visualObjs: TuneObjectArray, rootElement: HTMLElement | string) {
     // only first tune in tunebook supported
-    this.visualObj = visualObjs[0];
+    this.tune = visualObjs[0];
 
     if (typeof rootElement === "string") {
       this.rootElement = document.querySelector(rootElement);
@@ -37,7 +37,7 @@ export default class ScorePlayer {
     // TODO: scrubbing the timeline doesn't work
 
     // create cursorController
-    const cursorController = new CursorController(this.rootElement);
+    const cursorController = new CursorController(this.rootElement, this.tune);
 
     // create widgetController
     const widgetOptions: SynthVisualOptions = {
@@ -56,10 +56,10 @@ export default class ScorePlayer {
     const synthController = new SynthController();
     synthController.init(widgetController, cursorController);
     console.log('visualObj');
-    console.log(this.visualObj);
+    console.log(this.tune);
     // set the tune
     try {
-      await synthController.setTune(this.visualObj, false, {
+      await synthController.setTune(this.tune, false, {
         sequenceCallback: this.onSequenceGenerated,
       });
       console.log(`tune loaded successfully`);
