@@ -1,62 +1,47 @@
-import { Plugin } from "obsidian";
-import { renderAbc, AbcVisualParams } from "abcjs";
-import ScorePlayer from "src/ScorePlayer";
+import { App, MarkdownPostProcessor, MarkdownPostProcessorContext, MarkdownPreviewRenderer, 
+	MarkdownRenderer, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { signature, renderAbc, AbcVisualParams } from 'abcjs';
 
 const optionsRegex = new RegExp(/(?<options>{.*})\n---\n(?<source>.*)/s);
 const defaultOptions: AbcVisualParams = {
-  add_classes: true,
-  responsive: "resize",
+	add_classes: true,
+	responsive: 'resize'
 };
 
 export default class MusicPlugin extends Plugin {
-  onload() {
-    this.registerMarkdownCodeBlockProcessor(
-      "music-abc",
+	onload() {
+		console.log('loading abcjs plugin');
 
-      async (source: string, el: HTMLElement, ctx) => {
+		this.registerMarkdownCodeBlockProcessor('abc', this.codeProcessor);
+		this.registerMarkdownCodeBlockProcessor('music-abc', this.codeProcessor);
+	}
 
-        // parse options
-        let userOptions: AbcVisualParams = {};
-        const errors = [];
-        const optionsMatch = source.match(optionsRegex);
-        if (optionsMatch !== null) {
-          source = optionsMatch.groups["source"];
-          try {
-            userOptions = JSON.parse(optionsMatch.groups["options"]);
-          } catch (e) {
-            console.error(e);
-            errors.push(
-              `<strong>Failed to parse user-options</strong>\n\t${e}`
-            );
-          }
-        }
+	onunload() {
+		console.log('unloading abcjs plugin');
+	}
 
-        // render score
-        const visualObj = renderAbc(
-          el,
-          source,
-          Object.assign(defaultOptions, userOptions)
-        );
+	async codeProcessor (source: string, el: HTMLElement, ctx: any) {
+		let userOptions = {};
+		let error = null;
 
-        // init score player
-        try {
-          const scorePlayer = new ScorePlayer(visualObj, el);
-          await scorePlayer.init();
-        } catch (error) {
-          errors.push(error);
-        }
+		const optionsMatch = source.match(optionsRegex);
+		if (optionsMatch !== null) {
+			source = optionsMatch.groups["source"];
+			try {
+				userOptions = JSON.parse(optionsMatch.groups["options"]);
+			} catch (e) {
+				console.error(e);
+				error = `<strong>Failed to parse user-options</strong>\n\t${e}`;
+			}
+		}
 
-        if (errors.length > 0) {
-          const errorNode = document.createElement("div");
-          errorNode.innerHTML = errors.join("\n");
-          errorNode.addClass("obsidian-plugin-abcjs-error");
-          el.appendChild(errorNode);
-        }
-      }
-    );
-  }
+		renderAbc(el, source, Object.assign(defaultOptions, userOptions));
 
-  onunload() {
-    console.log("unloading abcjs plugin");
-  }
+		if (error !== null) {
+			const errorNode = document.createElement('div');
+			errorNode.innerHTML = error;
+			errorNode.addClass("obsidian-plugin-abcjs-error");
+			el.appendChild(errorNode);
+		}
+	}
 }
